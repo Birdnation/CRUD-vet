@@ -11,6 +11,8 @@ let mascotas = [{
     dueno: "Marcelo Henrriquez",
     numChip: 33658875845
 }];
+
+
 const tableBody = document.getElementById('bodyTable');
 const tipoMascota = document.getElementById('tipo-mascota');
 const nombreMascota = document.getElementById('nombre-mascota');
@@ -28,6 +30,7 @@ const confirmDelete = document.getElementById('confirm-delete');
 const declineDelete = document.getElementById('decline-delete');
 var auxOperacion;
 
+//Función para actualizar las vistas.
 const listarMascotas = ()=>{
     tableBody.innerHTML = '';
     let fillTable = mascotas.map((mascota) =>{
@@ -49,6 +52,8 @@ const listarMascotas = ()=>{
     });
 };
 
+
+//Función para eliminar un registro, recibe como parámetro el id del objeto a eliminar.
 let eliminar = (id) => {
     mascotas.find((mascota) => {
         if (mascota.id == id) {
@@ -56,7 +61,6 @@ let eliminar = (id) => {
         }
     })
     
-    console.log(tituloModal[0].innerText)
     confirmDelete.onclick = () =>{
         mascotas.forEach((mascota) => {
             if (mascota.id == id) {
@@ -73,8 +77,9 @@ let eliminar = (id) => {
     listarMascotas();
 }
 
+
+//Función para editar un registro, recibe como parámetro el id del objeto a editar.
 let editar = (id) => {
-    
     mascotas.find((mascota) => {
         if(mascota.id == id) {
             const selectMascota = mascotas[mascotas.indexOf(mascota)];
@@ -91,7 +96,7 @@ let editar = (id) => {
     })
 }
 
-
+//Evento de enviar formulario de registro. (crea un nuevo objeto)
 formulario.onsubmit = (e)=>{
     if (auxOperacion == 'agregar') {
         let contador = 1
@@ -131,13 +136,9 @@ formulario.onsubmit = (e)=>{
                 if (mascota.id == idMascota.value) {
                     const selectMascota = mascotas[mascotas.indexOf(mascota)];
                     selectMascota.tipo = tipoMascota.value
-                    selectMascota.nombre
+                    selectMascota.nombre = nombreMascota.value
                 }
-                
             })
-
-
-
             btnCerrar.click();
             listarMascotas();
             formulario.classList.remove('was-validated');
@@ -147,6 +148,7 @@ formulario.onsubmit = (e)=>{
     
 }
 
+//Evento para agregar una nueva mascota
 nuevaMascotaBtn.onclick = () => {
     formulario.reset();
     tituloModal[0].innerText = `Agregar nueva mascota`;
@@ -154,4 +156,5 @@ nuevaMascotaBtn.onclick = () => {
     btnGuardar.innerText = 'Guardar';
     auxOperacion = 'agregar';
 }
+
 listarMascotas();

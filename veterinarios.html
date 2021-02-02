@@ -1,0 +1,188 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./asset/css/customVet.css">
+
+    <title>Registro de veterinarios</title>
+  </head>
+  <body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="navbar-brand" href="#"><i class="fa fa-home" aria-hidden="true"></i>  Veterinaria</a>
+                    <a class="nav-link" href="./index.html"> <i class="fa fa-heart" aria-hidden="true"></i> Mascotas</a>
+                    <a class="nav-link active" href="./veterinarios.html"><i class="fas fa-user-md"></i> Veterinarios</a>
+                    <a class="nav-link" href="./consultas.html"><i class="fa fa-hospital" aria-hidden="true"></i> Consultas</a>
+                    <a class="nav-link" href="./duenos.html"><i class="fa fa-users" aria-hidden="true"></i> Dueños</a>
+                </div>
+                
+            </div>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
+            </form>
+        </nav>
+
+        <div class="jumbotron jumbotron-fluid mascota-banner">
+            <div class="container">
+                <h1 class="display-4">Veterinarios</h1>
+                <p class="lead">Registro de veterinarios</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container text-right btn-action">
+        <button id="nuevo" type="button" class="btn btn-success" data-toggle="modal" data-target="#ModalAgregarMascota">Nuevo</button>
+    </div>
+
+    <div class="container">
+    <table class="table">
+        <thead class="thead-light">
+            <tr>
+            <th scope="col">#</th>
+            <th scope="col">Rut</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Apellidos</th>
+            <th scope="col">Especialidad</th>
+            <th scope="col">Nº Credencial</th>
+            <th class="text-center" scope="col">Acción</th>
+            </tr>
+        </thead>
+        <tbody id="bodyTable">
+            
+        </tbody>
+        </table>
+    </div>
+
+
+    <!-- Modal agregar editar -->
+    <div class="modal fade" id="ModalAgregarMascota" tabindex="-1" aria-labelledby="ModalAgregarMascotaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="ModalAgregarMascotaLabel">Agregar nuevo veterinario</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulario de registro -->
+                    <form id="formulario" class="needs-validation" novalidate>
+                        <!-- ID -->
+                        <input type="hidden" id="id">
+
+                        <div class="form-row">
+                            <!-- RUT -->
+                            <div class="col-md-6 mb-3">
+                                <label for="rut-veterinario">Rut</label>
+                                <input type="text" class="form-control" id="rut-veterinario" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingrese rut.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <!-- NOMBRE -->
+                            <div class="col-md-6 mb-3">
+                                <label for="nombre-veterinario">Nombre</label>
+                                <input type="text" class="form-control" id="nombre-veterinario" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingrese nombre.
+                                </div>
+                            </div>
+                            <!-- APELLIDO -->
+                            <div class="col-md-6 mb-3">
+                                <label for="apellido-veterinario">Apellidos</label>
+                                <input type="text" class="form-control" id="apellido-veterinario" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingrese nombre.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <!-- ESPECIALIDAD -->
+                            <div class="col-md-12 mb-3">
+                                <label for="especialidad">Especialidad</label>
+                                <select class="custom-select" id="Especialidad" required>
+                                    <option selected disabled value="">Seleccione una especialidad...</option>
+                                    <option value="Cirujía">Cirujía</option>
+                                    <option value="Oncología">Oncología</option>
+                                    <option value="Fisioterapia">Fisioterapia</option>
+                                    <option value="Rehabilitación">Rehabilitación</option>
+                                    <option value="Fauna Silvestre">Fauna Silvestre</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Por favor seleccione una especialidad.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <label for="numero-credencial">Nº Credencial</label>
+                                <input type="text" class="form-control" id="numero-credencial" required>
+                                <div class="invalid-feedback">
+                                    Por favor ingrese nº Credencial.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button id="btn-cerrar" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <button id="btn-guardar" class="btn btn-primary" type="submit">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal eliminar -->
+    <div class="modal fade" id="ModalEliminarMascota" tabindex="-1" aria-labelledby="ModalEliminarMascotaLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="ModalEliminarMascotaLabel">Eliminar</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    
+                    <div class="text-center">
+                        <h4>¿Estas seguro?*</h4>
+                        <button id="confirm-delete" class="btn btn-danger btn-modal-delete">SI</button>
+                        <button id="decline-delete" class="btn btn-info btn-modal-delete">NO</button>
+                        <p class="textoModalEliminar">*Esta acción es irreversible</p>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button id="btn-cerrar-modal" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+    <script src="./asset/js/script.js"></script>
+    <script src="./asset/js/veterinarios.js"></script>
+  </body>
+</html>
