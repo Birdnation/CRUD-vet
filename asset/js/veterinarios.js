@@ -1,18 +1,4 @@
-let veterinarios = [{
-    id: 1,
-    rut: "15.336.987-6",
-    nombre: "Marcelo",
-    apellidos: "Toro Rodriguez",
-    especialidad: "Fisioterapia",
-    numCredencial: 33558998785
-},{
-    id: 2,
-    rut: "13.998.713-6",
-    nombre: "Erika",
-    apellidos: "Saavedra Rodriguez",
-    especialidad: "Cirujía",
-    numCredencial: 33558998785
-}];
+let veterinarios = [];
 
 //Constantes para el formulario de agregar
 const tableBody = document.getElementById('bodyTable');
@@ -36,11 +22,15 @@ const tituloModalEliminar = document.getElementById('ModalEliminarMascotaLabel')
 const confirmDelete = document.getElementById('confirm-delete');
 const declineDelete = document.getElementById('decline-delete');
 var auxOperacion;
+const urlVeterinario = 'http://localhost:5000/veterinarios';
 
 //Función para actualizar las vistas.
-const listarVeterinarios = ()=>{
-    tableBody.innerHTML = '';
-    let fillTable = veterinarios.map((veterinario) =>{
+const listarVeterinarios = async ()=>{
+    try {
+        await solicitarVeterinario();
+    if (veterinarios.length > 0) {
+        tableBody.innerHTML = '';
+        let fillTable = veterinarios.map((veterinario) =>{
         tableBody.innerHTML += ` <tr>
                                     <th scope="row">${veterinario.id}</th>
                                     <td>${veterinario.rut}</td>
@@ -58,10 +48,53 @@ const listarVeterinarios = ()=>{
                                     </td>
                                 </tr>`;
     });
+    } else {
+        tableBody.innerHTML = `<tr> <td> No hay veterinarios </td> </tr>`;
+    }
+    } catch (error) {
+        $('.alert').show();
+    }
+    
+};
+
+solicitarVeterinario = async () =>{
+    await fetch(urlVeterinario,{method: 'GET', mode: 'cors'})
+        .then((data) => {if (data.ok) {
+            return data.json();
+        }})
+        .then((respuesta) => {
+            veterinarios = respuesta;
+            return respuesta;
+        });
+}
+
+const enviarVeterinario = async (data)=>{
+    await fetch(urlVeterinario,{
+        method: 'POST',
+        mode: 'cors',
+        headers: {"Content-Type": "application/json"},
+        body: [JSON.stringify(data)]
+    });
+};
+
+const actualizarVeterinario = async (data, id)=>{
+    await fetch(urlVeterinario + "/" + parseInt(id),{
+        method: 'PUT',
+        mode: 'cors',
+        headers: {"Content-Type": "application/json"},
+        body: [JSON.stringify(data)]
+    });
+};
+
+const eliminarVeterinario = async (id)=>{
+    await fetch(urlVeterinario + "/" + parseInt(id),{
+        method: 'DELETE',
+        mode: 'cors',
+    });
 };
 
 //Evento de enviar formulario de registro. (crea un nuevo objeto)
-formulario.onsubmit = (e)=>{
+formulario.onsubmit = async (e)=>{
     //Condición de agregar
     if (auxOperacion == 'agregar') {
         //elimina la clase verificado
@@ -88,11 +121,12 @@ formulario.onsubmit = (e)=>{
         }
 
         if(formulario.className.indexOf('was-validated') > 0){
-            veterinarios.push(newDatos)
+            await enviarVeterinario(newDatos);
             btnCerrar.click();
             listarVeterinarios();
             formulario.classList.remove('was-validated');
             formulario.reset();
+            location.reload();
         }
 
     //condición de actualizar    
@@ -111,6 +145,7 @@ formulario.onsubmit = (e)=>{
                     selectVeterinario.apellidos = apellidosVeterinario.value
                     selectVeterinario.especialidad = especialidadVeterinario.value
                     selectVeterinario.numCredencial = numCredencialVeterinario.value
+                    actualizarVeterinario(selectVeterinario, selectVeterinario.id);
                 }
             })
             
@@ -118,6 +153,7 @@ formulario.onsubmit = (e)=>{
             listarVeterinarios();
             formulario.classList.remove('was-validated');
             formulario.reset();
+            location.reload();
         }
     }
     
@@ -135,7 +171,7 @@ let eliminar = (id) => {
     confirmDelete.onclick = () =>{
         veterinarios.forEach((veterinario) => {
             if (veterinario.id == id) {
-                veterinarios.splice(veterinarios.indexOf(veterinario),1);
+                eliminarVeterinario(id);
             }
         })
         btnCerrarDelete.click();

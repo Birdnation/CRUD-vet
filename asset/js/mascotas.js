@@ -1,5 +1,3 @@
-
-
 let mascotas = [];
 
 
@@ -23,40 +21,37 @@ var auxOperacion;
 
 //Función para actualizar las vistas.
 const listarMascotas = async () => {
-    await solicitarMascotas();
-    tableBody.innerHTML = '';
-    let fillTable = mascotas.map((mascota) =>{
-        tableBody.innerHTML += ` <tr>
-                                    <th scope="row">${mascota.id}</th>
-                                    <td>${mascota.tipo}</td>
-                                    <td>${mascota.nombre}</td>
-                                    <td>${mascota.dueno}</td>
-                                    <td>${mascota.numChip}</td>
-                                    <td>
-                                        <div class="btn-toolbar justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
-                                            <div class="btn-group" role="group" aria-label="First group">
-                                                <button type="button" class="btn btn-warning" onclick="editar(${mascota.id})" data-toggle="modal" data-target="#ModalAgregarMascota"><i class="fas fa-pencil-alt"></i></button>
-                                                <button type="button" class="btn btn-danger" onclick="eliminar(${mascota.id})" data-toggle="modal" data-target="#ModalEliminarMascota"><i class="fa fa-trash" aria-hidden="true"></i></button>
+    try {
+        await solicitarMascotas();
+        if (mascotas.length > 0) {
+            tableBody.innerHTML = '';
+            let fillTable = mascotas.map((mascota) =>{
+            tableBody.innerHTML += ` <tr>
+                                        <th scope="row">${mascota.id}</th>
+                                        <td>${mascota.tipo}</td>
+                                        <td>${mascota.nombre}</td>
+                                        <td>${mascota.dueno}</td>
+                                        <td>${mascota.numChip}</td>
+                                        <td>
+                                            <div class="btn-toolbar justify-content-center" role="toolbar" aria-label="Toolbar with button groups">
+                                                <div class="btn-group" role="group" aria-label="First group">
+                                                    <button type="button" class="btn btn-warning" onclick="editar(${mascota.id})" data-toggle="modal" data-target="#ModalAgregarMascota"><i class="fas fa-pencil-alt"></i></button>
+                                                    <button type="button" class="btn btn-danger" onclick="eliminar(${mascota.id})" data-toggle="modal" data-target="#ModalEliminarMascota"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                </tr>`;
-    });
+                                        </td>
+                                    </tr>`;
+            });
+        }else{
+            tableBody.innerHTML = `<tr> <td> No hay mascotas </td> </tr>`;
+        }
+    } catch (error) {
+        $('.alert').show();
+    }
 };
 
-solicitarMascotas = async () =>{
-    await fetch(urlMascota,{method: 'GET', mode: 'cors'})
-        .then((data) => {if (data.ok) {
-            return data.json();
-        }})
-        .then((respuesta) => {
-            mascotas = respuesta;
-            return respuesta;
-        });
-}
-
 //Función para eliminar un registro, recibe como parámetro el id del objeto a eliminar.
-let eliminar = (id) => {
+let eliminar = async (id) => {
     mascotas.find((mascota) => {
         if (mascota.id == id) {
             tituloModalEliminar.innerText = `¿Eliminar a ${mascota.nombre}?`;
@@ -125,6 +120,7 @@ formulario.onsubmit = async (e)=>{
             listarMascotas();
             formulario.classList.remove('was-validated');
             formulario.reset();
+            location.reload();
         }
     }else if (auxOperacion == 'editar'){
         if (formulario.checkValidity() === false) {
@@ -134,7 +130,7 @@ formulario.onsubmit = async (e)=>{
         }
 
         if(formulario.className.indexOf('was-validated') > 0){
-            mascotas.find((mascota) => {
+            await mascotas.find((mascota) => {
                 if (mascota.id == idMascota.value) {
                     const selectMascota = mascotas[mascotas.indexOf(mascota)];
                     selectMascota.tipo = tipoMascota.value
@@ -147,9 +143,21 @@ formulario.onsubmit = async (e)=>{
             listarMascotas();
             formulario.classList.remove('was-validated');
             formulario.reset();
+            location.reload();
         }
     }
 };
+
+solicitarMascotas = async () =>{
+    await fetch(urlMascota,{method: 'GET', mode: 'cors'})
+        .then((data) => {if (data.ok) {
+            return data.json();
+        }})
+        .then((respuesta) => {
+            mascotas = respuesta;
+            return respuesta;
+        });
+}
 
 const enviarMascota = async (data)=>{
     await fetch(urlMascota,{

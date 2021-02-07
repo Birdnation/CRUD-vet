@@ -1,18 +1,4 @@
-let duenos = [{
-    id: 1,
-    rut: "15.336.987-6",
-    nombre: "Marcelo",
-    apellidos: "Toro Rodriguez",
-    ciudad: "Antofagasta",
-    direccion: "Av. Bonilla 11258"
-},{
-    id: 2,
-    rut: "13.998.713-6",
-    nombre: "Erika",
-    apellidos: "Saavedra Rodriguez",
-    ciudad: "Antofagasta",
-    direccion: "Av. Sabella 1120"
-}];
+let duenos = [];
 
 //Constantes para el formulario de agregar
 const tableBody = document.getElementById('bodyTable');
@@ -36,10 +22,14 @@ const tituloModalEliminar = document.getElementById('ModalEliminarMascotaLabel')
 const confirmDelete = document.getElementById('confirm-delete');
 const declineDelete = document.getElementById('decline-delete');
 var auxOperacion;
+const urlDuenos = 'http://localhost:5000/duenos';
 
 //Función para actualizar las vistas.
-const listarDuenos = ()=>{
-    tableBody.innerHTML = '';
+const listarDuenos = async ()=>{
+    try {
+        await solicitarDuenos();
+    if (duenos.length > 0) {
+        tableBody.innerHTML = '';
     let fillTable = duenos.map((dueno) =>{
         tableBody.innerHTML += ` <tr>
                                     <th scope="row">${dueno.id}</th>
@@ -58,10 +48,54 @@ const listarDuenos = ()=>{
                                     </td>
                                 </tr>`;
     });
+    } else {
+        tableBody.innerHTML = `<tr> <td> No hay dueños </td> </tr>`;
+    }
+    } catch (error) {
+        $('.alert').show();
+    }
+    
+};
+
+solicitarDuenos = async () =>{
+    await fetch(urlDuenos,{method: 'GET', mode: 'cors'})
+        .then((data) => {if (data.ok) {
+            return data.json();
+        }})
+        .then((respuesta) => {
+            duenos = respuesta;
+            return respuesta;
+        });
+}
+
+const enviarDueno = async (data)=>{
+    console.log(data);
+    await fetch(urlDuenos,{
+        method: 'POST',
+        mode: 'cors',
+        headers: {"Content-Type": "application/json"},
+        body: [JSON.stringify(data)]
+    });
+};
+
+const actualizarDueno = async (data, id)=>{
+    await fetch(urlDuenos + "/" + parseInt(id),{
+        method: 'PUT',
+        mode: 'cors',
+        headers: {"Content-Type": "application/json"},
+        body: [JSON.stringify(data)]
+    });
+};
+
+const eliminarDueno = async (id)=>{
+    await fetch(urlDuenos + "/" + parseInt(id),{
+        method: 'DELETE',
+        mode: 'cors',
+    });
 };
 
 //Evento de enviar formulario de registro. (crea un nuevo objeto)
-formulario.onsubmit = (e)=>{
+formulario.onsubmit = async (e)=>{
     //Condición de agregar
     if (auxOperacion == 'agregar') {
         //elimina la clase verificado
@@ -77,8 +111,8 @@ formulario.onsubmit = (e)=>{
             rut: rutDueno.value,
             nombre: nombreDueno.value,
             apellidos: apellidosDueno.value,
+            direccion: direccionDueno.value,
             ciudad: ciudadDueno.value,
-            direccion: direccionDueno.value
         }
 
         if (formulario.checkValidity() === false) {
@@ -88,11 +122,12 @@ formulario.onsubmit = (e)=>{
         }
 
         if(formulario.className.indexOf('was-validated') > 0){
-            duenos.push(newDatos)
+            await enviarDueno(newDatos);
             btnCerrar.click();
             listarDuenos();
             formulario.classList.remove('was-validated');
             formulario.reset();
+            location.reload();
         }
 
     //condición de actualizar    
@@ -104,7 +139,7 @@ formulario.onsubmit = (e)=>{
             formulario.classList.add('was-validated');
         }
         if(formulario.className.indexOf('was-validated') > 0){
-            duenos.find((dueno) => {
+            await duenos.find((dueno) => {
                 if (dueno.id == idDueno.value) {
                     const selectDueno = duenos[duenos.indexOf(dueno)];
                     selectDueno.rut = rutDueno.value
@@ -112,7 +147,7 @@ formulario.onsubmit = (e)=>{
                     selectDueno.apellidos = apellidosDueno.value
                     selectDueno.ciudad = ciudadDueno.value
                     selectDueno.direccion = direccionDueno.value
-                    
+                    actualizarDueno(selectDueno,selectDueno.id);
                 }
             })
             
@@ -120,14 +155,14 @@ formulario.onsubmit = (e)=>{
             listarDuenos();
             formulario.classList.remove('was-validated');
             formulario.reset();
+            location.reload();
         }
     }
-    
 }
 
 
 //Función para eliminar un registro, recibe como parámetro el id del objeto a eliminar.
-let eliminar = (id) => {
+let eliminar = async (id) => {
     duenos.find((dueno) => {
         if (dueno.id == id) {
             tituloModalEliminar.innerText = `¿Eliminar a ${dueno.nombre}?`;
@@ -137,7 +172,7 @@ let eliminar = (id) => {
     confirmDelete.onclick = () =>{
         duenos.forEach((dueno) => {
             if (dueno.id == id) {
-                duenos.splice(duenos.indexOf(dueno),1);
+                eliminarDueno(id);
             }
         })
         btnCerrarDelete.click();
