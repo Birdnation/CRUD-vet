@@ -11,6 +11,17 @@ module.exports = (peticion,respuesta) =>{
     const rutaLimpia = ruta.replace(/^\/+|\/+$/g, '');
     //4.- obtener el metodo http
     const metodo = peticion.method.toLowerCase();
+    //4.1.- dar permisos CORS a cualquier remoto *
+    respuesta.setHeader('Access-Control-Allow-Origin', '*')
+    respuesta.setHeader('Access-Control-Request-Methods', 'OPTIONS,GET,POST,PUT,DELETE')
+    respuesta.setHeader('Access-Control-Allow-Headers', '*')
+
+    //4.2.- dar respuesta cuando el method sea options
+    if (metodo === 'options') {
+        respuesta.writeHead(200);
+        respuesta.end();
+        return;
+    }
     //5.- obtener el string query con las variables por parametro.
     const queryString = myUrl.searchParams;
     //6.- obtener los headers

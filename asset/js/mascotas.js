@@ -1,16 +1,6 @@
-let mascotas = [{
-    id: 1,
-    tipo: "Gato",
-    nombre: "Benito",
-    dueno: "Rodrigo Dominguez",
-    numChip: 33558998785
-},{
-    id: 2,
-    tipo: "Perro",
-    nombre: "Manchas",
-    dueno: "Marcelo Henrriquez",
-    numChip: 33658875845
-}];
+
+
+let mascotas = [];
 
 
 const tableBody = document.getElementById('bodyTable');
@@ -28,10 +18,12 @@ const tituloModal = document.getElementsByClassName('modal-title');
 const tituloModalEliminar = document.getElementById('ModalEliminarMascotaLabel');
 const confirmDelete = document.getElementById('confirm-delete');
 const declineDelete = document.getElementById('decline-delete');
+const urlMascota = 'http://localhost:5000/mascotas';
 var auxOperacion;
 
 //Función para actualizar las vistas.
-const listarMascotas = ()=>{
+const listarMascotas = async () => {
+    await solicitarMascotas();
     tableBody.innerHTML = '';
     let fillTable = mascotas.map((mascota) =>{
         tableBody.innerHTML += ` <tr>
@@ -52,6 +44,16 @@ const listarMascotas = ()=>{
     });
 };
 
+solicitarMascotas = async () =>{
+    await fetch(urlMascota,{method: 'GET', mode: 'cors'})
+        .then((data) => {if (data.ok) {
+            return data.json();
+        }})
+        .then((respuesta) => {
+            mascotas = respuesta;
+            return respuesta;
+        });
+}
 
 //Función para eliminar un registro, recibe como parámetro el id del objeto a eliminar.
 let eliminar = (id) => {
@@ -64,7 +66,7 @@ let eliminar = (id) => {
     confirmDelete.onclick = () =>{
         mascotas.forEach((mascota) => {
             if (mascota.id == id) {
-                mascotas.splice(mascotas.indexOf(mascota),1);
+                eliminarMascota(id);
             }
         })
         btnCerrarDelete.click();
@@ -97,7 +99,7 @@ let editar = (id) => {
 }
 
 //Evento de enviar formulario de registro. (crea un nuevo objeto)
-formulario.onsubmit = (e)=>{
+formulario.onsubmit = async (e)=>{
     if (auxOperacion == 'agregar') {
         let contador = 1
         formulario.classList.remove('was-validated');
@@ -118,7 +120,7 @@ formulario.onsubmit = (e)=>{
         }
 
         if(formulario.className.indexOf('was-validated') > 0){
-            mascotas.push(newDatos)
+            await enviarMascota(newDatos);
             btnCerrar.click();
             listarMascotas();
             formulario.classList.remove('was-validated');
@@ -137,6 +139,8 @@ formulario.onsubmit = (e)=>{
                     const selectMascota = mascotas[mascotas.indexOf(mascota)];
                     selectMascota.tipo = tipoMascota.value
                     selectMascota.nombre = nombreMascota.value
+                    selectMascota.numChip = numeroChip.value
+                    actualizarMascota(selectMascota, selectMascota.id);
                 }
             })
             btnCerrar.click();
@@ -145,8 +149,33 @@ formulario.onsubmit = (e)=>{
             formulario.reset();
         }
     }
-    
-}
+};
+
+const enviarMascota = async (data)=>{
+    await fetch(urlMascota,{
+        method: 'POST',
+        mode: 'cors',
+        headers: {"Content-Type": "application/json"},
+        body: [JSON.stringify(data)]
+    });
+};
+
+const actualizarMascota = async (data, id)=>{
+    await fetch(urlMascota + "/" + parseInt(id),{
+        method: 'PUT',
+        mode: 'cors',
+        headers: {"Content-Type": "application/json"},
+        body: [JSON.stringify(data)]
+    });
+};
+
+const eliminarMascota = async (id)=>{
+    await fetch(urlMascota + "/" + parseInt(id),{
+        method: 'DELETE',
+        mode: 'cors',
+    });
+};
+
 
 //Evento para agregar una nueva mascota
 nuevaMascotaBtn.onclick = () => {
@@ -156,5 +185,4 @@ nuevaMascotaBtn.onclick = () => {
     btnGuardar.innerText = 'Guardar';
     auxOperacion = 'agregar';
 }
-
 listarMascotas();
