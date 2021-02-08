@@ -1,4 +1,4 @@
-module.exports = (consultas) => {return {
+module.exports = ({consultas, veterinarios, mascotas}) => {return {
     get: (data, cb)=>{
         selectConsulta = null;
         if (data.id) {
@@ -12,7 +12,18 @@ module.exports = (consultas) => {return {
             }
             return cb(404,{mensaje: `No se encontró la consulta con el indice ${data.id}`})
         }
-        cb(200, consultas)
+        const consultasRelacion = consultas.map((consulta) => {
+            return {...consulta, mascota: mascotas.find((mascota) => {
+                if (mascota.id == consulta.mascota) {
+                    return mascota;
+                }
+            }), veterinario: veterinarios.find((veterinario) => {
+                if (veterinario.id == consulta.veterinario) {
+                    return veterinario;
+                }
+            })}
+        })
+        cb(200, consultasRelacion)
     },
     post: (data, cb)=>{
         data.payload.fechaCreacion = new Date();

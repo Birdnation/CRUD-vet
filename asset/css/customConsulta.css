@@ -1,0 +1,29 @@
+.btn-action{
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+
+.mascota-banner{
+    background: linear-gradient(to top, rgba(255,255,255,1), rgba(255, 255, 255, 0)), url('../img/consulta.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 13em;
+}
+
+.btn-modal-delete{
+    width: 4em;
+}
+
+.textoModalEliminar{
+    text-align: start;
+    margin-top: 2em;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 80%;
+}
+
+.alert{
+    display: none;
+}
