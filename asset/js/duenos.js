@@ -22,7 +22,7 @@ const tituloModalEliminar = document.getElementById('ModalEliminarMascotaLabel')
 const confirmDelete = document.getElementById('confirm-delete');
 const declineDelete = document.getElementById('decline-delete');
 var auxOperacion;
-const urlDuenos = 'http://localhost:5000/duenos';
+const urlDuenos = 'https://vetbackend.vercel.app/duenos';
 
 //Función para actualizar las vistas.
 const listarDuenos = async ()=>{

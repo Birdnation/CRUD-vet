@@ -1,5 +1,5 @@
 let mascotas = [];
-
+let duenos = [];
 
 const tableBody = document.getElementById('bodyTable');
 const tipoMascota = document.getElementById('tipo-mascota');
@@ -16,13 +16,14 @@ const tituloModal = document.getElementsByClassName('modal-title');
 const tituloModalEliminar = document.getElementById('ModalEliminarMascotaLabel');
 const confirmDelete = document.getElementById('confirm-delete');
 const declineDelete = document.getElementById('decline-delete');
-const urlMascota = 'http://localhost:5000/mascotas';
+const urlMascota = 'https://vetbackend.vercel.app/mascotas';
 var auxOperacion;
 
 //Función para actualizar las vistas.
 const listarMascotas = async () => {
     try {
         await solicitarMascotas();
+        await llenarSelectDuenos();
         if (mascotas.length > 0) {
             tableBody.innerHTML = '';
             let fillTable = mascotas.map((mascota) =>{
@@ -49,6 +50,23 @@ const listarMascotas = async () => {
         $('.alert').show();
     }
 };
+
+const llenarSelectDuenos = async()=>{
+    nombreDueno.innerHTML = '';
+    try {
+        await solicitarDuenos();
+        if (duenos.length > 0) {
+            duenos.forEach(dueno => {
+                nombreDueno.innerHTML += `<option value="${dueno.nombre} ${dueno.apellidos}">${dueno.nombre} ${dueno.apellidos}</option>`
+            });
+        } else {
+            nombreDueno.innerHTML = `<option selected disabled value="na">No hay dueños suscritos...</option>`
+        }
+    } catch (error) {
+        $('.alert').show();
+    }
+}
+
 
 //Función para eliminar un registro, recibe como parámetro el id del objeto a eliminar.
 let eliminar = async (id) => {
@@ -77,6 +95,7 @@ let eliminar = async (id) => {
 
 //Función para editar un registro, recibe como parámetro el id del objeto a editar.
 let editar = (id) => {
+    /* llenarSelectDuenos(); */
     mascotas.find((mascota) => {
         if(mascota.id == id) {
             const selectMascota = mascotas[mascotas.indexOf(mascota)];
@@ -159,6 +178,17 @@ solicitarMascotas = async () =>{
         });
 }
 
+solicitarDuenos = async () =>{
+    await fetch('https://vetbackend.vercel.app/duenos',{method: 'GET', mode: 'cors'})
+        .then((data) => {if (data.ok) {
+            return data.json();
+        }})
+        .then((respuesta) => {
+            duenos = respuesta;
+            return respuesta;
+        });
+}
+
 const enviarMascota = async (data)=>{
     await fetch(urlMascota,{
         method: 'POST',
@@ -187,6 +217,8 @@ const eliminarMascota = async (id)=>{
 
 //Evento para agregar una nueva mascota
 nuevaMascotaBtn.onclick = () => {
+    solicitarDuenos();
+    llenarSelectDuenos();
     formulario.reset();
     tituloModal[0].innerText = `Agregar nueva mascota`;
     nombreDueno.removeAttribute('disabled');

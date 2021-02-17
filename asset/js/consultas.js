@@ -1,4 +1,6 @@
 let consultas = [];
+let pacientes = [];
+let veterinarios = [];
 
 //Constantes para el formulario de agregar
 const tableBody = document.getElementById('bodyTable');
@@ -18,14 +20,15 @@ const btnGuardar = document.getElementById('btn-guardar');
 const tituloModal = document.getElementsByClassName('modal-title');
 
 var auxOperacion;
-const urlConsultas = 'http://localhost:5000/consultas';
+const urlConsultas = 'https://vetbackend.vercel.app/consultas';
 
 //Función para actualizar las vistas.
 const listarConsultas = async ()=>{
     
     try {
         await solicitarConsultas();
-    
+        await llenarSelectPaciente();
+        await llenarSelectVeterinario();
         if (consultas.length > 0) {
         tableBody.innerHTML = '';
         let fillTable = consultas.map((consulta) =>{
@@ -54,6 +57,38 @@ const listarConsultas = async ()=>{
     }
 };
 
+const llenarSelectPaciente = async()=>{
+    mascota.innerHTML = '';
+    try {
+        await solicitarPaciente();
+        if (pacientes.length > 0) {
+            pacientes.forEach(paciente => {
+                mascota.innerHTML += `<option value="${paciente.id}">${paciente.nombre}</option>`
+            });
+        }else{
+            mascota.innerHTML = `<option selected disabled value="">No hay mascotas en registro...</option>`
+        }
+    } catch (error) {
+        
+    }
+}
+
+const llenarSelectVeterinario = async()=>{
+    veterinario.innerHTML = '';
+    try {
+        await solicitarVeterinarios();
+        if (veterinarios.length > 0) {
+            veterinarios.forEach(vet => {
+                veterinario.innerHTML += `<option value="${vet.id}">${vet.nombre} ${vet.apellidos}</option>`
+            });
+        }else{
+            veterinario.innerHTML = `<option selected disabled value="">No hay veterinarios en registro...</option>`
+        }
+    } catch (error) {
+        
+    }
+}
+
 solicitarConsultas = async () =>{
     await fetch(urlConsultas,{method: 'GET', mode: 'cors'})
         .then((data) => {if (data.ok) {
@@ -63,6 +98,39 @@ solicitarConsultas = async () =>{
             consultas = respuesta;
             return respuesta;
         });
+}
+
+solicitarPaciente = async () =>{
+    await fetch('https://vetbackend.vercel.app/mascotas',{method: 'GET', mode: 'cors'})
+        .then((data) => {if (data.ok) {
+            return data.json();
+        }})
+        .then((respuesta) => {
+            pacientes = respuesta;
+            return respuesta;
+        });
+}
+
+solicitarVeterinarios = async () =>{
+    await fetch('https://vetbackend.vercel.app/veterinarios',{method: 'GET', mode: 'cors'})
+        .then((data) => {if (data.ok) {
+            return data.json();
+        }})
+        .then((respuesta) => {
+            veterinarios = respuesta;
+            return respuesta;
+        });
+}
+
+solicitarVeterinario = async () =>{
+    await fetch('https://vetbackend.vercel.app/veterinarios',{method: 'GET', mode: 'cors'})
+    .then((data) => {if (data.ok) {
+        return data.json();
+    }})
+    .then((respuesta) => {
+        veterinarios = respuesta;
+        return respuesta;
+    });
 }
 
 const enviarConsulta = async (data)=>{
@@ -100,8 +168,6 @@ formulario.onsubmit = async (e)=>{
             id: contador,
             mascota: mascota.value,
             veterinario: veterinario.value,
-            fechaCreacion: new Date(),
-            fechaEdicion: new Date(),
             diagnostico: diagnostico.value,
             comentarios: comentarios.value,
         }
@@ -133,6 +199,7 @@ formulario.onsubmit = async (e)=>{
             await consultas.find((consulta) => {
                 if (consulta.id == idConsulta.value) {
                     const selectConsulta = consultas[consultas.indexOf(consulta)];
+                    console.log(selectConsulta);
                     selectConsulta.mascota = mascota.value
                     selectConsulta.veterinario = veterinario.value
                     selectConsulta.fechaEdicion = new Date()
@@ -159,10 +226,10 @@ let editar = (id) => {
         if(consulta.id == id) {
             const selectConsulta = consultas[consultas.indexOf(consulta)];
             tituloModal[0].innerText = `Editar a ${selectConsulta.mascota}...`;
-            btnGuardar.innerText = 'Editar';
+            btnGuardar.innerText = 'Editar';    
             idConsulta.value = id;
-            mascota.value = selectConsulta.mascota;
-            veterinario.value = selectConsulta.veterinario;
+            mascota.value = selectConsulta.mascota.id;
+            veterinario.value = selectConsulta.veterinario.id;
             diagnostico.value = selectConsulta.diagnostico;
             comentarios.value = selectConsulta.comentarios;
             auxOperacion = 'editar';
@@ -173,6 +240,8 @@ let editar = (id) => {
 //Evento para agregar una nueva mascota
 nuevoBtn.onclick = () => {
     formulario.reset();
+    llenarSelectPaciente();
+    llenarSelectVeterinario();
     tituloModal[0].innerText = `Agregar nuevo dueño`;
     btnGuardar.innerText = 'Guardar';
     auxOperacion = 'agregar';
