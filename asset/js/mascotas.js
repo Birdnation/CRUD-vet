@@ -139,7 +139,6 @@ formulario.onsubmit = async (e)=>{
             listarMascotas();
             formulario.classList.remove('was-validated');
             formulario.reset();
-            location.reload();
         }
     }else if (auxOperacion == 'editar'){
         if (formulario.checkValidity() === false) {
@@ -162,7 +161,6 @@ formulario.onsubmit = async (e)=>{
             listarMascotas();
             formulario.classList.remove('was-validated');
             formulario.reset();
-            location.reload();
         }
     }
 };

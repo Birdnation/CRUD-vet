@@ -127,7 +127,6 @@ formulario.onsubmit = async (e)=>{
             listarDuenos();
             formulario.classList.remove('was-validated');
             formulario.reset();
-            location.reload();
         }
 
     //condición de actualizar    
@@ -155,7 +154,6 @@ formulario.onsubmit = async (e)=>{
             listarDuenos();
             formulario.classList.remove('was-validated');
             formulario.reset();
-            location.reload();
         }
     }
 }

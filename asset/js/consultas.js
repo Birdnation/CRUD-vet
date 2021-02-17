@@ -20,14 +20,14 @@ const btnGuardar = document.getElementById('btn-guardar');
 const tituloModal = document.getElementsByClassName('modal-title');
 
 var auxOperacion;
-const urlConsultas = 'https://vetbackend.vercel.app/consultas';
+const urlConsultas = 'https://vetbackend-i22aa25vf.vercel.app/consultas';
 
 //Función para actualizar las vistas.
 const listarConsultas = async ()=>{
     
     try {
-        await solicitarConsultas();
-        await llenarSelectPaciente();
+        solicitarConsultas();
+        llenarSelectPaciente();
         await llenarSelectVeterinario();
         if (consultas.length > 0) {
         tableBody.innerHTML = '';
@@ -89,7 +89,7 @@ const llenarSelectVeterinario = async()=>{
     }
 }
 
-solicitarConsultas = async () =>{
+const solicitarConsultas = async () =>{
     await fetch(urlConsultas,{method: 'GET', mode: 'cors'})
         .then((data) => {if (data.ok) {
             return data.json();
@@ -100,8 +100,8 @@ solicitarConsultas = async () =>{
         });
 }
 
-solicitarPaciente = async () =>{
-    await fetch('https://vetbackend.vercel.app/mascotas',{method: 'GET', mode: 'cors'})
+const solicitarPaciente = async () =>{
+    await fetch('https://vetbackend-i22aa25vf.vercel.app/mascotas',{method: 'GET', mode: 'cors'})
         .then((data) => {if (data.ok) {
             return data.json();
         }})
@@ -111,8 +111,8 @@ solicitarPaciente = async () =>{
         });
 }
 
-solicitarVeterinarios = async () =>{
-    await fetch('https://vetbackend.vercel.app/veterinarios',{method: 'GET', mode: 'cors'})
+const solicitarVeterinarios = async () =>{
+    await fetch('https://vetbackend-i22aa25vf.vercel.app/veterinarios',{method: 'GET', mode: 'cors'})
         .then((data) => {if (data.ok) {
             return data.json();
         }})
@@ -120,17 +120,6 @@ solicitarVeterinarios = async () =>{
             veterinarios = respuesta;
             return respuesta;
         });
-}
-
-solicitarVeterinario = async () =>{
-    await fetch('https://vetbackend.vercel.app/veterinarios',{method: 'GET', mode: 'cors'})
-    .then((data) => {if (data.ok) {
-        return data.json();
-    }})
-    .then((respuesta) => {
-        veterinarios = respuesta;
-        return respuesta;
-    });
 }
 
 const enviarConsulta = async (data)=>{
@@ -184,7 +173,6 @@ formulario.onsubmit = async (e)=>{
             listarConsultas();
             formulario.classList.remove('was-validated');
             formulario.reset();
-            location.reload();
         }
 
     //condición de actualizar    
@@ -213,7 +201,6 @@ formulario.onsubmit = async (e)=>{
             listarConsultas();
             formulario.classList.remove('was-validated');
             formulario.reset();
-            location.reload();
         }
     }
 }
